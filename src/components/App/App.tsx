@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import "./App.css";
+import css from "./App.module.css";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
@@ -8,48 +8,57 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import type { Movie } from "../../types/movie";
 import { fetchMovies } from "../../services/movieService";
+import { useQuery } from "@tanstack/react-query";
+import Pagination from "../Pagination/Pagination";
+
 
 export default function App() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [query, setQuery] = useState('')
+  const [page, setPage] = useState(1)
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  async function handleSearch(query: string) {
-    setMovies([]);
-    setLoading(true);
-    setError(false);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['movies', query, page],
+    queryFn: () => fetchMovies(query, page),
+    enabled: query !== '',
+  });
 
-    try {
-      const results = await fetchMovies(query);
+  const movies = data ? data.results : [];
+  const totalPages = data ? data.total_pages : 0;
 
-      if (!results.length) {
-        toast.error("No movies found");
-        return;
-      }
-
-      setMovies(results);
-    } catch {
-      toast.error("Something went wrong");
-      setError(true);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (data && data.results.length === 0) {
+      toast.error('No movies found')
     }
-  }
+  },[data])
 
+  function handleSearch(newQuery: string) {
+    setQuery(newQuery);
+    setPage(1)
+  }
+      
   return (
     <div>
       <SearchBar onSubmit={handleSearch} />
 
-      {loading ? (
+      {isLoading ? (
         <Loader />
-      ) : error ? (
+      ) : isError ? (
         <ErrorMessage />
-      ) : (
+        ) : (
+            <>
         <MovieGrid
           movies={movies}
           onSelect={setSelectedMovie}
-        />
+              />
+              {totalPages > 1 && (
+                <Pagination
+                  totalPages = {totalPages}
+                  currentPage = {page}
+                  onPageChange = {setPage}
+                />
+              )}
+              </>
       )}
 
       <MovieModal

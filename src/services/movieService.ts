@@ -3,15 +3,22 @@ import type { Movie } from "../types/movie";
 
 const TOKEN = import.meta.env.VITE_API_TOKEN;
 
-interface MoviesResponse {
+export interface MoviesResponse {
   results: Movie[];
+  total_pages: number;
 }
 
-export async function fetchMovies(query: string): Promise<Movie[]> {
+export async function fetchMovies(
+  query: string,
+  page: number
+): Promise<MoviesResponse> {
   const res = await axios.get<MoviesResponse>(
     "https://api.themoviedb.org/3/search/movie",
     {
-      params: { query },
+      params: {
+        query,
+        page,
+      },
       headers: {
         Authorization: `Bearer ${TOKEN}`,
         accept: "application/json",
@@ -19,5 +26,5 @@ export async function fetchMovies(query: string): Promise<Movie[]> {
     }
   );
 
-  return res.data.results;
+  return res.data;
 }
