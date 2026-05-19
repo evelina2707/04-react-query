@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import css from './SearchBar.module.css'
 
 interface SearchBarProps {
   onSubmit: (query: string) => void;
@@ -17,9 +18,17 @@ export default function SearchBar({ onSubmit }: SearchBarProps) {
   };
 
   return (
-    <form action={handleSubmit}>
-      <input type="text" name="query" />
-      <button type="submit">Search</button>
-    </form>
+    <form className={css.form} action={handleSubmit}>
+        <input
+          className={css.input}
+          type="text"
+          name="query"
+          placeholder="Search movies..."
+        />
+
+        <button className={css.button} type="submit">
+          Search
+        </button>
+      </form>
   );
 }

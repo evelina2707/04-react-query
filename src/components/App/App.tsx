@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import css from "./App.module.css";
+// import css from "./App.module.css";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
@@ -10,6 +10,7 @@ import type { Movie } from "../../types/movie";
 import { fetchMovies } from "../../services/movieService";
 import { useQuery } from "@tanstack/react-query";
 import Pagination from "../Pagination/Pagination";
+
 
 
 export default function App() {
@@ -47,18 +48,20 @@ export default function App() {
         <ErrorMessage />
         ) : (
             <>
-        <MovieGrid
-          movies={movies}
-          onSelect={setSelectedMovie}
-              />
-              {totalPages > 1 && (
-                <Pagination
-                  totalPages = {totalPages}
-                  currentPage = {page}
-                  onPageChange = {setPage}
-                />
-              )}
-              </>
+  {totalPages > 1 && (
+    <Pagination
+      totalPages={totalPages}
+      currentPage={page}
+      onPageChange={setPage}
+    />
+  )}
+
+  <MovieGrid
+    movies={movies}
+    onSelect={setSelectedMovie}
+  />
+</>
+      
       )}
 
       <MovieModal
