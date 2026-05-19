@@ -1,4 +1,4 @@
-import "modern-normalize";
+import 'modern-normalize/modern-normalize.css';
 import './index.css'
 import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
